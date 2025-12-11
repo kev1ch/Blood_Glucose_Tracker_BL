@@ -1,5 +1,5 @@
 // java
-        package org.pavlov.glucose_tracker.controller;
+        package org.pavlov.glucose_tracker.dto;
 
         import java.time.OffsetDateTime;
 

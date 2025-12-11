@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import jakarta.validation.Valid;
 
+import org.pavlov.glucose_tracker.dto.GlucoseEntry;
+import org.pavlov.glucose_tracker.dto.GlucoseEntryRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
