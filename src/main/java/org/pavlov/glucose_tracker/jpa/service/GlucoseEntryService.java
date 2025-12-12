@@ -49,4 +49,8 @@ public class GlucoseEntryService {
 
         return new GlucoseEntry(e.getId(), e.getValue(), ts, e.getDescription());
     }
+
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
 }

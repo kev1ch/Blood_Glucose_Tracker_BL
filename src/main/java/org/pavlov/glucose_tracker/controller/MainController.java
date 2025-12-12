@@ -39,4 +39,11 @@ public class MainController {
     public List<GlucoseEntry> getAllEntries() {
         return service.findAll();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEntry(@PathVariable Long id) {
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
