@@ -31,7 +31,8 @@ public class GlucoseEntryService {
         GlucoseEntryEntity entity = new GlucoseEntryEntity(
             request.getValue(),
             instant,
-            request.getDescription()
+            request.getDescription(),
+            request.getPunctureSpot()
         );
 
         GlucoseEntryEntity saved = repository.save(entity);
@@ -47,7 +48,7 @@ public class GlucoseEntryService {
             ? null
             : OffsetDateTime.ofInstant(e.getTimestamp(), ZoneOffset.UTC);
 
-        return new GlucoseEntry(e.getId(), e.getValue(), ts, e.getDescription());
+        return new GlucoseEntry(e.getId(), e.getValue(), ts, e.getDescription(), e.getPunctureSpot());
     }
 
     public void deleteById(Long id) {

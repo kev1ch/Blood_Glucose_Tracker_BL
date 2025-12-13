@@ -1,10 +1,13 @@
 package org.pavlov.glucose_tracker.jpa.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.Instant;
 
 @Entity
 @Table(name = "glucose_entries")
+@Data
 public class GlucoseEntryEntity {
 
     @Id
@@ -20,39 +23,16 @@ public class GlucoseEntryEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "puncture_spot")
+    private String punctureSpot;
+
     protected GlucoseEntryEntity() { }
 
-    public GlucoseEntryEntity(double value, Instant timestamp, String description) {
+    public GlucoseEntryEntity(double value, Instant timestamp, String description, String punctureSpot) {
         this.value = value;
         this.timestamp = timestamp;
         this.description = description;
+        this.punctureSpot = punctureSpot;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

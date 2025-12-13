@@ -24,4 +24,5 @@
             private OffsetDateTime timestamp;
 
             private String description;
+            private String punctureSpot;
         }
