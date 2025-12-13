@@ -8,7 +8,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "glucose_entries")
 @Data
-public class GlucoseEntryEntity {
+public class GlucoseEntryT {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +26,9 @@ public class GlucoseEntryEntity {
     @Column(name = "puncture_spot")
     private String punctureSpot;
 
-    protected GlucoseEntryEntity() { }
+    protected GlucoseEntryT() { }
 
-    public GlucoseEntryEntity(double value, Instant timestamp, String description, String punctureSpot) {
+    public GlucoseEntryT(double value, Instant timestamp, String description, String punctureSpot) {
         this.value = value;
         this.timestamp = timestamp;
         this.description = description;

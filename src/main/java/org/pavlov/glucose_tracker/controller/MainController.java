@@ -46,4 +46,21 @@ public class MainController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<GlucoseEntry> updateEntry(@PathVariable Long id, @Valid @RequestBody GlucoseEntryRequest request) {
+        return service.findById(id)
+                .map(existing -> {
+                    // copy mutable fields from request to the existing entity
+                    existing.setDescription(request.getDescription());
+                    existing.setTimestamp(request.getTimestamp().toInstant());
+                    existing.setValue(request.getValue());
+                    existing.setPunctureSpot(request.getPunctureSpot());
+
+                    // persist the updated entity (ensure your service exposes save(GlucoseEntry) or update(id, request))
+                    GlucoseEntry updated = service.save(existing);
+                    return ResponseEntity.ok(updated);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
 }
