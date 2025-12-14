@@ -1,7 +1,8 @@
 package org.pavlov.glucose_tracker.controller;
 
 import java.net.URI;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 
@@ -61,6 +62,12 @@ public class MainController {
                     return ResponseEntity.ok(updated);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // REST function in backend that will return a list of recommended spots for next puncture
+    @GetMapping("/recommended-spots")
+    public List<String> getRecommendedPunctureSpots() {
+        return service.getRecommendedPunctureSpots();
     }
 
 }

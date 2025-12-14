@@ -4,8 +4,7 @@ package org.pavlov.glucose_tracker.jpa.service;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.pavlov.glucose_tracker.dto.GlucoseEntry;
@@ -63,5 +62,44 @@ public class GlucoseEntryService {
 
     public Optional<GlucoseEntryT> findById(Long id) {
         return repository.findById(id);
+    }
+
+    public List<String> getRecommendedPunctureSpots() {
+        List<GlucoseEntry> recentEntries = findAll().stream()
+                .filter(e -> e.getPunctureSpot() != null && !e.getPunctureSpot().isBlank())
+                .sorted(Comparator.comparing(GlucoseEntry::getTimestamp).reversed())
+                .limit(20)
+                .collect(Collectors.toList());
+
+        Map<String, Integer> spotToIndex = new LinkedHashMap<>();
+        for (int i = 0; i < recentEntries.size(); i++) {
+            String spot = Optional.ofNullable(recentEntries.get(i).getPunctureSpot())
+                    .map(String::trim)
+                    .map(String::toUpperCase)
+                    .orElse("");
+            spotToIndex.putIfAbsent(spot, i);
+        }
+
+        List<String> allSpots = new ArrayList<>();
+        String[] hands = {"L", "R"};
+        String[] sides = {"L", "C", "R"};
+        for (String hand : hands) {
+            for (int finger = 1; finger <= 5; finger++) {
+                for (String side : sides) {
+                    allSpots.add(hand + finger + side);
+                }
+            }
+        }
+
+        return allSpots.stream()
+                .sorted((a, b) -> {
+                    boolean aUsed = spotToIndex.containsKey(a);
+                    boolean bUsed = spotToIndex.containsKey(b);
+                    if (!aUsed && !bUsed) return 0;
+                    if (!aUsed) return -1;
+                    if (!bUsed) return 1;
+                    return Integer.compare(spotToIndex.get(b), spotToIndex.get(a));
+                })
+                .collect(Collectors.toList());
     }
 }
