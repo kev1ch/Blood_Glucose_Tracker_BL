@@ -64,6 +64,7 @@ public class GlucoseEntryService {
         return repository.findById(id);
     }
 
+
     public List<String> getRecommendedPunctureSpots() {
         List<GlucoseEntry> recentEntries = findAll().stream()
                 .filter(e -> e.getPunctureSpot() != null && !e.getPunctureSpot().isBlank())
@@ -71,23 +72,27 @@ public class GlucoseEntryService {
                 .limit(20)
                 .collect(Collectors.toList());
 
+        // build allowed spots (no "C")
+        List<String> allSpots = new ArrayList<>();
+        String[] hands = {"L", "R"};
+        String[] sides = {"L", "R"}; // removed "C"
+        for (String hand : hands) {
+            for (int finger = 1; finger <= 5; finger++) {
+                for (String side : sides) {
+                    allSpots.add(hand + finger + side);
+                }
+            }
+        }
+
+        // index only recent entries that are part of allowed spots
         Map<String, Integer> spotToIndex = new LinkedHashMap<>();
         for (int i = 0; i < recentEntries.size(); i++) {
             String spot = Optional.ofNullable(recentEntries.get(i).getPunctureSpot())
                     .map(String::trim)
                     .map(String::toUpperCase)
                     .orElse("");
-            spotToIndex.putIfAbsent(spot, i);
-        }
-
-        List<String> allSpots = new ArrayList<>();
-        String[] hands = {"L", "R"};
-        String[] sides = {"L", "C", "R"};
-        for (String hand : hands) {
-            for (int finger = 1; finger <= 5; finger++) {
-                for (String side : sides) {
-                    allSpots.add(hand + finger + side);
-                }
+            if (allSpots.contains(spot)) {
+                spotToIndex.putIfAbsent(spot, i);
             }
         }
 
