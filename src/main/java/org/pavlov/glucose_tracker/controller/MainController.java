@@ -37,8 +37,33 @@ public class MainController {
     }
 
     @GetMapping
-    public List<GlucoseEntry> getAllEntries() {
-        return service.findAll();
+    public List<GlucoseEntry> getAllEntries(@RequestParam Optional<String> sortBy) {
+        List<GlucoseEntry> entries = new ArrayList<>(service.findAll());
+
+        if (sortBy.isPresent()) {
+            String key = sortBy.get().toLowerCase(Locale.ROOT).trim();
+            switch (key) {
+                case "timestamp_asc":
+                case "timestamp":
+                    entries.sort(Comparator.comparing(GlucoseEntry::getTimestamp));
+                    break;
+                case "timestamp_desc":
+                    entries.sort(Comparator.comparing(GlucoseEntry::getTimestamp).reversed());
+                    break;
+                case "value_asc":
+                case "value":
+                    entries.sort(Comparator.comparing(GlucoseEntry::getValue));
+                    break;
+                case "value_desc":
+                    entries.sort(Comparator.comparing(GlucoseEntry::getValue).reversed());
+                    break;
+                default:
+                    // unknown sort param: leave unsorted (or could throw 400)
+                    break;
+            }
+        }
+
+        return entries;
     }
 
     @DeleteMapping("/{id}")
