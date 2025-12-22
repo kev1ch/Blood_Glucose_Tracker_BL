@@ -37,8 +37,23 @@ public class MainController {
     }
 
     @GetMapping
-    public List<GlucoseEntry> getAllEntries(@RequestParam Optional<String> sortBy) {
+    public List<GlucoseEntry> getAllEntries(
+            @RequestParam Optional<String> sortBy,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+
         List<GlucoseEntry> entries = new ArrayList<>(service.findAll());
+
+        // normalize pagination params
+        if (page < 1) {
+            page = 1;
+        }
+
+        page = page - 1; // zero-based page index
+
+        if (size <= 0) {
+            size = 5;
+        }
 
         if (sortBy.isPresent()) {
             String key = sortBy.get().toLowerCase(Locale.ROOT).trim();
@@ -63,7 +78,16 @@ public class MainController {
             }
         }
 
-        return entries;
+        // apply pagination
+        int total = entries.size();
+        long firstElementIndex = (long) page * (long) size;
+        if (firstElementIndex >= total) {
+            return Collections.emptyList();
+        }
+        int fromIndex = (int) firstElementIndex;
+        int toIndex = Math.min(fromIndex + size, total);
+
+        return entries.subList(fromIndex, toIndex);
     }
 
     @DeleteMapping("/{id}")
