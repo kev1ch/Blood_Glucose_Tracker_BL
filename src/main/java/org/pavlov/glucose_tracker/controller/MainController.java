@@ -37,7 +37,7 @@ public class MainController {
     }
 
     @GetMapping
-    public List<GlucoseEntry> getAllEntries(
+    public ResponseEntity<List<GlucoseEntry>> getAllEntries(
             @RequestParam Optional<String> sortBy,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "5") int size) {
@@ -48,9 +48,7 @@ public class MainController {
         if (page < 1) {
             page = 1;
         }
-
         page = page - 1; // zero-based page index
-
         if (size <= 0) {
             size = 5;
         }
@@ -73,21 +71,25 @@ public class MainController {
                     entries.sort(Comparator.comparing(GlucoseEntry::getValue).reversed());
                     break;
                 default:
-                    // unknown sort param: leave unsorted (or could throw 400)
                     break;
             }
         }
 
-        // apply pagination
+        // apply pagination and reuse total
         int total = entries.size();
         long firstElementIndex = (long) page * (long) size;
         if (firstElementIndex >= total) {
-            return Collections.emptyList();
+            return ResponseEntity.ok()
+                    .header("X-Total-Count", String.valueOf(total))
+                    .body(Collections.emptyList());
         }
         int fromIndex = (int) firstElementIndex;
         int toIndex = Math.min(fromIndex + size, total);
+        List<GlucoseEntry> pageList = entries.subList(fromIndex, toIndex);
 
-        return entries.subList(fromIndex, toIndex);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(total))
+                .body(pageList);
     }
 
     @DeleteMapping("/{id}")
